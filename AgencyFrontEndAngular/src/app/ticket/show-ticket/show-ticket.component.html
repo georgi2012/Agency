@@ -1,0 +1,42 @@
+<table class="ticket-table">
+    <thead>
+        <tr>
+            <th>Ticket ID</th>
+            <th>Journey ID</th>
+            <th>From - To</th>
+            <th>Administrative Costs</th>
+            <th>Total Price</th>
+            <th>Options</th>
+        </tr>
+
+    </thead>
+    <tbody>
+        <!-- <tr [hidden]="!noElementsAvailable">No tickets are available at the moment. You can add a new one.</tr> -->
+        <tr *ngFor="let item of TicketsList">
+            <td>{{item.ticketID}}</td>
+            <td>{{item.journeyID}}</td>
+            <td>{{item.from}} - {{item.to}}</td>
+            <td>${{item.administrativeCosts}}</td>
+            <td>${{item.totalPrice}}</td>
+            <td>
+                <button>
+                    <img class="btn-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Edit_icon_%28the_Noun_Project_30184%29.svg/1024px-Edit_icon_%28the_Noun_Project_30184%29.svg.png" alt="Edit">
+                </button>
+                <button (click)="deleteClick(item.ticketID)">
+                    <img class="btn-img" src="https://cdn-icons-png.flaticon.com/512/2891/2891491.png"  alt="Delete">
+                </button>
+            </td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <button (click)="addOpenClick()">
+                <img class="btn-add-img" src="https://cdn3.iconfinder.com/data/icons/eightyshades/512/14_Add-512.png">
+                <p style="text-align: center; float: right;">Add</p>
+            </button>
+         </tr>
+    </tfoot>
+</table>
+<div [hidden]="addWindowIsHidden">
+ <app-add-edit-ticket   id="add-edit-window"></app-add-edit-ticket>
+</div>

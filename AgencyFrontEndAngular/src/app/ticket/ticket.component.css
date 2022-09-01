@@ -1,0 +1,13 @@
+#show-anim{
+    animation-name: invisible-to-visible;
+    animation-duration: 1s;
+}
+
+@keyframes invisible-to-visible{
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
