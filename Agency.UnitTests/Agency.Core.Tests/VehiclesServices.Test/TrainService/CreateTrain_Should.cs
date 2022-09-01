@@ -15,16 +15,16 @@ namespace Agency.UnitTests.Agency.Core.Tests.VehiclesServices.Test.TrainServices
         [Fact]
         public async Task CreateTrain_ShouldAddNewTrainWithCorrectData()
         {
-            //mocking
+            //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
             int capacity = DataRestrictions.MaxTrainCarts;
             decimal price = DataRestrictions.MaxPricePerKm;
             int carts = DataRestrictions.MaxTrainCarts;
             int oldListCount = inmDbContext.Vehicles.ToList().Count;
-            //execution
+            //act
             var service = new TrainService(inmDbContext);
             await service.CreateTrainAsync(capacity, price, carts);
-            //virification
+            //assert
             var vehiclesList = inmDbContext.Vehicles.ToList();
             Assert.Equal(oldListCount + 1, vehiclesList.Count);
             var plane = (Train)vehiclesList.FindLast(x => x is Train &&

@@ -30,7 +30,9 @@ namespace Agency.Api.Controllers.Vechiles
             catch (Exception e)
             {
                 return BadRequest($"Fail. {e.Message}");
+                //return BadRequest(false);
             }
+            //return Ok(true);
             return Ok($"Vehicle created.");
         }
 

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Agency.Data.Migrations
 {
     [DbContext(typeof(AgencyDBContext))]
-    [Migration("20220827132645_nolists")]
-    partial class nolists
+    [Migration("20220901082818_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

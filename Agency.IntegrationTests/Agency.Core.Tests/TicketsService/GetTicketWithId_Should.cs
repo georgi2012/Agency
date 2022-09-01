@@ -18,10 +18,10 @@ namespace Agency.UnitTests.Agency.Core.Tests.TicketServices.Test
         [Fact]
         public async Task GetTicketWithId_ShouldReturnNullWhenNotFound()
         {
-            //assert
+            //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemoryEmptyContextGenerator();
-            //act
             var service = new TicketService(inmDbContext);
+            //act
             var returnedTicket = await service.GetTicketWithIdAsync(new Guid());
             //assert
             Assert.Null(returnedTicket);
@@ -30,6 +30,7 @@ namespace Agency.UnitTests.Agency.Core.Tests.TicketServices.Test
         [Fact]
         public async Task GetTicketWithId_ShouldReturnTheCorrectTicket()
         {
+            //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
             var wantedTicket = inmDbContext.Tickets.ToList().First();
             //act

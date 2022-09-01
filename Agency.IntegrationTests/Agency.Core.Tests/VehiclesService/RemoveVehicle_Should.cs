@@ -14,12 +14,11 @@ namespace Agency.UnitTests.Agency.Core.Tests.VehiclesServices.Test.VehiclesServi
         {
             //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemoryEmptyContextGenerator();
-            Mock<TicketService> mockTicketService = new(inmDbContext);
-            Mock<JourneyService> mockJourneyService = new(inmDbContext, mockTicketService.Object);
-            int vehID = 42;
+            TicketService ticketService = new(inmDbContext);
+            JourneyService journeyService = new(inmDbContext, ticketService);
             //act and assert
-            var service = new VehicleService(inmDbContext,mockJourneyService.Object);
-            Assert.ThrowsAsync<Exception>(async () => await service.RemoveVehicleAsync(vehID));
+            var service = new VehicleService(inmDbContext,journeyService);
+            Assert.ThrowsAsync<Exception>(async () => await service.RemoveVehicleAsync(42));
         }
 
         [Fact]
@@ -27,18 +26,16 @@ namespace Agency.UnitTests.Agency.Core.Tests.VehiclesServices.Test.VehiclesServi
         {
             //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
-            Mock<TicketService> mockTicketService = new(inmDbContext);
-            Mock<JourneyService> mockJourneyService = new(inmDbContext, mockTicketService.Object);
+            TicketService ticketService = new(inmDbContext);
+            JourneyService journeyService = new(inmDbContext, ticketService);
             var vehiclesListBefore = inmDbContext.Vehicles.ToList();
             Assert.True(vehiclesListBefore.Count >= 2);
             var vehIdToRemove = vehiclesListBefore.First().VehicleID;
-            var service = new VehicleService(inmDbContext,mockJourneyService.Object);
-            mockJourneyService.Setup(x => x.GetJourneyAsync()).
-                Returns(Task.FromResult(new List<IJourney>()));
+            var service = new VehicleService(inmDbContext,journeyService);
             //act
             await service.RemoveVehicleAsync(vehIdToRemove);
-            //assert
             var vehListAfter = inmDbContext.Vehicles.ToList();
+            //assert
             Assert.NotNull(vehListAfter);
             Assert.Equal(vehiclesListBefore.Count - 1, vehListAfter.Count);
             foreach (var ticket in vehListAfter)

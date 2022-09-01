@@ -15,15 +15,15 @@ namespace Agency.UnitTests.Agency.Core.Tests.VehiclesServices.Test.BusServices
         [Fact]
         public async Task CreateBus_ShouldAddNewBusWithCorrectData()
         {
-            //mocking
+            //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
             int capacity = DataRestrictions.MaxBusCapacity;
             decimal price = DataRestrictions.MaxPricePerKm;
             int oldListCount = inmDbContext.Vehicles.ToList().Count;
-            //execution
+            //act
             var service = new BusService(inmDbContext);
             await service.CreateBusAsync(capacity, price);
-            //virification
+            //assert
             var vehiclesList = inmDbContext.Vehicles.ToList();
             Assert.Equal(oldListCount + 1, vehiclesList.Count);
             var plane = (Bus)vehiclesList.FindLast(x => x is Bus &&

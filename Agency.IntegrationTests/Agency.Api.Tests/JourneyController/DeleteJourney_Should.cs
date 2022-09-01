@@ -23,16 +23,15 @@ namespace Agency.UnitTests.Agency.Api.Tests.JourneyControllers
         public async void DeleteTicket_ShouldReturnNotFoundWhenRemoveFailsBecauseNotFound()
         {
             //arrange
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            mockJService.Setup(x => x.RemoveJourneyAsync(It.IsAny<Guid>())).Throws(new Exception());
-            Mock<JourneyReceiveNode> mockJourneyDTO = new();
-            Mock<IJourneyNode> mockJNode = new();
+            AgencyDBContext db = AgencyUtils.InMemoryEmptyContextGenerator();
+            TicketService tService = new(db);
+            JourneyService jService = new(db, tService);
+            VehicleService vService = new(db, jService);
+            JourneyReceiveNode mockJourneyDTO = new();
+            JourneyNode mockjNode = new();
             //act
-            JourneyController controller = new(mockJService.Object,
-                mockVService.Object, mockDb.Object, mockJNode.Object);
+            JourneyController controller = new(jService,
+                vService, db, mockjNode);
             var result = await controller.DeleteJourney(new Guid());
             //assert
             Assert.IsType<NotFoundObjectResult>(result);
@@ -44,15 +43,16 @@ namespace Agency.UnitTests.Agency.Api.Tests.JourneyControllers
         public async void DeleteTicket_ShouldReturnOKWhenIsDeletedSuccessfully()
         {
             //arrange
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            Mock<IJourneyNode> mockJNode = new();
+            AgencyDBContext db = AgencyUtils.InMemorySeededContextGenerator();
+            TicketService tService = new(db);
+            JourneyService jService = new(db, tService);
+            VehicleService vService = new(db, jService);
+            JourneyNode jNode = new();
             //act
-            JourneyController controller = new(mockJService.Object,
-                mockVService.Object, mockDb.Object, mockJNode.Object);
-            var result = await controller.DeleteJourney(new Guid());
+            JourneyController controller = new(jService,
+                vService, db, jNode);
+            var result = await controller.DeleteJourney(
+                jService.GetJourneyAsync().Result.First().JourneyID);
             //assert
             Assert.IsType<OkObjectResult>(result);
             Assert.Equal(200, ((OkObjectResult)result).StatusCode);

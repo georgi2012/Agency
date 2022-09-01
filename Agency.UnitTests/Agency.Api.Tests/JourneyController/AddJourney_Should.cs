@@ -23,6 +23,7 @@ namespace Agency.UnitTests.Agency.Api.Tests.JourneyControllers
         [Fact]
         public async void AddJourney_ShouldReturnBadRequestWhenVehicleIsNotFound()
         {
+            //arrange
             Mock<AgencyDBContext> mockDb = new();
             Mock<TicketService> mockTService = new(mockDb.Object);
             Mock<JourneyService> mockJService = new(mockDb.Object,mockTService.Object);
@@ -30,12 +31,11 @@ namespace Agency.UnitTests.Agency.Api.Tests.JourneyControllers
             mockVService.Setup(x => x.GetVehicleWithIdAsync(It.IsAny<int>())).Returns(Task.FromResult<IVehicle>(null));
             Mock<JourneyReceiveNode> mockJourneyDTO = new();
             Mock<IJourneyNode> mockJNode = new();
-            //mockJourneyDTO.Setup(x=>x.VehicleID).Returns(42);
-            //
+            //act
             JourneyController controller = new(mockJService.Object,
                 mockVService.Object, mockDb.Object, mockJNode.Object);
             var result =await controller.AddJourney(mockJourneyDTO.Object);
-            //
+            //assert
             Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, ((BadRequestObjectResult)result).StatusCode);
 
@@ -44,6 +44,7 @@ namespace Agency.UnitTests.Agency.Api.Tests.JourneyControllers
         [Fact]
         public async void AddJourney_ShouldReturnOKWhenIsCreatedSuccessfully()
         {
+            //arrange
             Mock<AgencyDBContext> mockDb = new();
             Mock<IVehicle> mockVeh = new();
             Mock<TicketService> mockTService = new(mockDb.Object);
@@ -54,7 +55,7 @@ namespace Agency.UnitTests.Agency.Api.Tests.JourneyControllers
             Mock<JourneyReceiveNode> mockJourneyDTO = new();
             Mock<IJourneyNode> mockJNode = new();
 
-            //
+            //act
             JourneyController controller = new(mockJService.Object,
                 mockVService.Object, mockDb.Object,mockJNode.Object);
             var result = await controller.AddJourney(mockJourneyDTO.Object);

@@ -18,16 +18,16 @@ namespace Agency.UnitTests.Agency.Core.Tests.VehiclesServices.Test.AirplanesServ
         [Fact] 
         public async Task CreateAirplane_ShouldAddNewAirplaneWithCorrectData()
         {
-            //mocking
+            //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
             int capacity = DataRestrictions.MaxAirplaneCapacity;
             decimal price = DataRestrictions.MaxPricePerKm;
             bool hasFood = true;
             int oldListCount = inmDbContext.Vehicles.ToList().Count;
-            //execution
+            //act
             var service = new AirplaneService(inmDbContext);
             await service.CreateAirplaneAsync(capacity,price,hasFood);
-            //virification
+            //assert
             var vehiclesList = inmDbContext.Vehicles.ToList();
             Assert.Equal(oldListCount + 1, vehiclesList.Count);
             Airplane plane = (Airplane)vehiclesList.FindLast(x => x is Airplane && 

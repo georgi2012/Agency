@@ -21,16 +21,16 @@ namespace Agency.UnitTests.Agency.Core.Tests.JourneysService.Tests
             //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
             var creationVeh = inmDbContext.Vehicles.ToList().First();
-            Mock<TicketService> mockTicketService = new(inmDbContext);
+            TicketService ticketService = new(inmDbContext);
             const int distance = 350;
             string location = "abudabi";
             string destination = "dolno poduene";
             int oldListCount = inmDbContext.Tickets.ToList().Count;
+            var service = new JourneyService(inmDbContext, ticketService);
             //act
-            var service = new JourneyService(inmDbContext, mockTicketService.Object);
             await service.CreateJourneyAsync(location,destination,distance, creationVeh);
-            //assert
             var journeysList = inmDbContext.Journeys.ToList();
+            //assert
             Assert.Equal(oldListCount + 1, journeysList.Count);
             var journey = journeysList.FindLast(x => x.VehicleID == creationVeh.VehicleID);
             Assert.NotNull(journey);

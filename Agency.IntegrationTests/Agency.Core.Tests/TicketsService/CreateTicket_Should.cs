@@ -18,9 +18,8 @@ namespace Agency.UnitTests.Agency.Core.Tests.TicketServices.Test
         [Fact]
         public async Task CreateTicket_ShouldAddNewTicketWithCorrectCostAndJourneyObj()
         {
-            //assert
+            //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
-            Mock<Journey> mockJourneyObj = new Mock<Journey>();
             var creationJourney = inmDbContext.Journeys.ToList().First();
             const int admCost = 30;
             int oldListCount = inmDbContext.Tickets.ToList().Count;

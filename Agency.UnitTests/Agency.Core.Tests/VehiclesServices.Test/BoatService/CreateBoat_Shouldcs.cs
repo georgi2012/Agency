@@ -18,16 +18,16 @@ namespace Agency.UnitTests.Agency.Core.Tests.VehiclesServices.Test.BoatServices
         [Fact]
         public async Task CreateBoat_ShouldAddNewBoatWithCorrectData()
         {
-            //mocking
+            //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
             int capacity = DataRestrictions.MaxBoatCapacity;
             decimal price = DataRestrictions.MaxPricePerKm;
             bool hasWater = true;
             int oldListCount = inmDbContext.Vehicles.ToList().Count;
-            //execution
+            //act
             var service = new BoatService(inmDbContext);
             await service.CreateBoatAsync(capacity, price, hasWater);
-            //virification
+            //assert
             var vehiclesList = inmDbContext.Vehicles.ToList();
             Assert.Equal(oldListCount + 1, vehiclesList.Count);
             var plane = (Boat)vehiclesList.FindLast(x => x is Boat &&

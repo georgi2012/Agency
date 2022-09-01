@@ -19,7 +19,7 @@ namespace Agency.UnitTests.Agency.Core.Tests.TicketServices.Test
         [Fact]
         public async Task RemoveTicket_ShouldThrowWhenNotFound()
         {
-            //assert
+            //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
             Guid tickedID = new Guid();
             //making sure that the guid is unique
@@ -28,15 +28,15 @@ namespace Agency.UnitTests.Agency.Core.Tests.TicketServices.Test
             {
                 tickedID = new Guid();
             }
-            //act and assert
             var service = new TicketService(inmDbContext);
+            //act and assert
             Assert.ThrowsAsync<Exception>(async () => await service.RemoveTicketAsync(tickedID));
         }
 
         [Fact]
         public async Task RemoveTicket_ShouldRemoveTicketWhenFoundAndKeepOtherTicketsUntouched()
         {
-            //assert
+            //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
             var ticketsListBefore = inmDbContext.Tickets.ToList();
             Assert.True(ticketsListBefore.Count >= 2);

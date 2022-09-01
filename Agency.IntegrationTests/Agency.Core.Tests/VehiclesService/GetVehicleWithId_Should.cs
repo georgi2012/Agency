@@ -23,11 +23,11 @@ namespace Agency.UnitTests.Agency.Core.Tests.VehiclesServices.Test.VehiclesServi
         {
             //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemoryEmptyContextGenerator();
-            Mock<TicketService> mockTicketService = new(inmDbContext);
-            Mock<JourneyService> mockJourneyService = new(inmDbContext, mockTicketService.Object);
+            TicketService ticketService = new(inmDbContext);
+            JourneyService journeyService = new(inmDbContext, ticketService);
             List<Vehicle> expectedVehiclesList = inmDbContext.Vehicles.ToList();
+            var service = new VehicleService(inmDbContext,journeyService);
             //act
-            var service = new VehicleService(inmDbContext,mockJourneyService.Object);
             var returnedVehicle = await service.GetVehicleWithIdAsync(new Random().Next(10,1000));
             //assert
             Assert.Null(returnedVehicle);
@@ -38,10 +38,10 @@ namespace Agency.UnitTests.Agency.Core.Tests.VehiclesServices.Test.VehiclesServi
         {
             //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemoryEmptyContextGenerator();
-            Mock<TicketService> mockTicketService = new(inmDbContext);
-            Mock<JourneyService> mockJourneyService = new(inmDbContext, mockTicketService.Object);
+            TicketService ticketService = new(inmDbContext);
+            JourneyService journeyService = new(inmDbContext, ticketService);
+            var service = new VehicleService(inmDbContext, journeyService);
             //act
-            var service = new VehicleService(inmDbContext, mockJourneyService.Object);
             List<IVehicle> returnedVehiclesList = await service.GetVehiclesAsync();
             //assert
             Assert.NotNull(returnedVehiclesList);

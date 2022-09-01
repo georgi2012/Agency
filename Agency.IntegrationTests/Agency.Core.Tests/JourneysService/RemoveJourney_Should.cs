@@ -21,7 +21,7 @@ namespace Agency.UnitTests.Agency.Core.Tests.JourneysService.Tests
         {
             //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
-            Mock<TicketService> mockTickedService = new(inmDbContext);
+            TicketService tickedService = new(inmDbContext);
             Guid journeyID = new Guid();
             //making sure that the guid is unique
             var journeysList = inmDbContext.Journeys.ToList();
@@ -30,7 +30,7 @@ namespace Agency.UnitTests.Agency.Core.Tests.JourneysService.Tests
                 journeyID = new Guid();
             }
             //act and assert
-            var service = new JourneyService(inmDbContext, mockTickedService.Object);
+            var service = new JourneyService(inmDbContext, tickedService);
             Assert.ThrowsAsync<Exception>(async () => await service.RemoveJourneyAsync(journeyID));
         }
 
@@ -40,12 +40,10 @@ namespace Agency.UnitTests.Agency.Core.Tests.JourneysService.Tests
             //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
             var journeyListBefore = inmDbContext.Journeys.ToList();
-            Mock<TicketService> mockTickedService = new(inmDbContext);
+            TicketService tickedService = new(inmDbContext);
             Assert.True(journeyListBefore.Count >= 2);
             var journeyIdToRemove = journeyListBefore.First().JourneyID;
-            var service = new JourneyService(inmDbContext, mockTickedService.Object);
-            mockTickedService.Setup(x => x.GetTicketsAsync()).
-                Returns(Task.FromResult(new List<ITicket>()));
+            var service = new JourneyService(inmDbContext,tickedService);
             //act
             await service.RemoveJourneyAsync(journeyIdToRemove);
             //assert

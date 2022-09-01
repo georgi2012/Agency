@@ -28,4 +28,9 @@
     <ProjectReference Include="..\Agency.UnitTests\Agency.UnitTests.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Agency.Core.Tests\TicketsService\" />
+    <Folder Include="Agency.Api.Tests\" />
+  </ItemGroup>
+
 </Project>

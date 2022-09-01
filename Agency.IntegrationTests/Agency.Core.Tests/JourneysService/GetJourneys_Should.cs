@@ -22,11 +22,11 @@ namespace Agency.UnitTests.Agency.Core.Tests.JourneysService.Tests
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
             List<IJourney> returnedTicketsList = null;
             List<Journey> expectedTicketsList = inmDbContext.Journeys.ToList();
-            Mock<TicketService> mockTicketService = new(inmDbContext);
-            //execution
-            var service = new JourneyService(inmDbContext, mockTicketService.Object);
+            TicketService ticketService = new(inmDbContext);
+            //act
+            var service = new JourneyService(inmDbContext, ticketService);
             returnedTicketsList = await service.GetJourneyAsync();
-            //virification
+            //assert
             Assert.NotNull(returnedTicketsList);
             Assert.Equal(expectedTicketsList.Count, returnedTicketsList.Count);
 
@@ -41,9 +41,9 @@ namespace Agency.UnitTests.Agency.Core.Tests.JourneysService.Tests
         {
             //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemoryEmptyContextGenerator();
-            Mock<TicketService> mockTicketService = new(inmDbContext);
+            TicketService ticketService = new(inmDbContext);
             //act
-            var service = new JourneyService(inmDbContext,mockTicketService.Object);
+            var service = new JourneyService(inmDbContext,ticketService);
             var returnedTicketsList = await service.GetJourneyAsync();
             //assert
             Assert.NotNull(returnedTicketsList);

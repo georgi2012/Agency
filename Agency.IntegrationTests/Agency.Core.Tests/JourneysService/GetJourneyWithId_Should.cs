@@ -21,11 +21,11 @@ namespace Agency.UnitTests.Agency.Core.Tests.JourneysService.Tests
         {
             //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
-            Mock<TicketService> mockTicketService = new(inmDbContext);
-            //execution
-            var service = new JourneyService(inmDbContext,mockTicketService.Object);
+            TicketService ticketService = new(inmDbContext);
+            //act
+            var service = new JourneyService(inmDbContext,ticketService);
             var returnedJourney = await service.GetJourneyWithIdAsync(new Guid());
-            //virification
+            //assert
             Assert.Null(returnedJourney);
         }
 
@@ -34,11 +34,10 @@ namespace Agency.UnitTests.Agency.Core.Tests.JourneysService.Tests
         {
             //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
-            Mock<TicketService> mockTicketService = new(inmDbContext);
-            Mock<JourneyService> mockJourneyService = new(inmDbContext, mockTicketService.Object);
+            TicketService ticketService = new(inmDbContext);
             var wantedJourney = inmDbContext.Journeys.ToList().First();
+            var service = new JourneyService(inmDbContext, ticketService);
             //act
-            var service = new JourneyService(inmDbContext, mockTicketService.Object);
             var returnedJourney = await service.GetJourneyWithIdAsync(wantedJourney.JourneyID);
             //assert
             Assert.NotNull(returnedJourney);

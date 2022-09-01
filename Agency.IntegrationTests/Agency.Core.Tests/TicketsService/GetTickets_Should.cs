@@ -19,7 +19,7 @@ namespace Agency.UnitTests.Agency.Core.Tests.TicketServices.Test
         [Fact]
         public async Task GetTickets_ShouldReturnAllTicketsIfAnyAreAvailable()
         {
-            //assert
+            //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemorySeededContextGenerator();
             List<ITicket> returnedTicketsList = null;
             List<Ticket> expectedTicketsList = inmDbContext.Tickets.ToList();
@@ -39,7 +39,7 @@ namespace Agency.UnitTests.Agency.Core.Tests.TicketServices.Test
         [Fact]
         public async Task GetTickets_ShouldReturnEmptyListIfDbIsEmpty()
         {
-            //assert
+            //arrange
             AgencyDBContext inmDbContext = AgencyUtils.InMemoryEmptyContextGenerator();
             var service = new TicketService(inmDbContext);
             //act
