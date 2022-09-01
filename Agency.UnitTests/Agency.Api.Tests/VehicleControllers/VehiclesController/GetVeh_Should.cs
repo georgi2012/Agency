@@ -21,7 +21,7 @@ using Moq;
 
 namespace Agency.UnitTests.Agency.Api.Tests.VehicleControllers.VehiclesController
 {
-    internal class GetVeh_Should
+    public class GetVeh_Should
     {
         [Fact]
         public async void GetVeh_ShouldReturnTheJourneyWhenExists()
