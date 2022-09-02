@@ -12,4 +12,4 @@ Creating new journeys to chosen destination from starting location using already
 - ASP.Net Api and services
 - Database Context and DBSet models for database generation and seeding
 - Front-end made ready for communication with the back-end
-- Unit and Intergration tests for each function of the Api and services
+- Unit and Integration tests for each function of the Api and services
