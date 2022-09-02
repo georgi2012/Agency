@@ -1,4 +1,0 @@
-createtrain 80 0.4 3
-createjourney Sofia Tsa 3000 0
-createjourney Sofia SsdddddddddsdsssssssssSsdddddddddsdsssssssss 3000 0
-exit

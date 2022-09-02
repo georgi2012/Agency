@@ -1,2 +1,0 @@
-A bus cannot have less than 10 passengers or more than 50 passengers.
-A bus cannot have less than 10 passengers or more than 50 passengers.

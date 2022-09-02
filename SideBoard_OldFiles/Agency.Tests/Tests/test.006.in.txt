@@ -1,3 +1,0 @@
-createtrain 80 0.08 3
-createtrain 80 2.7 3
-exit

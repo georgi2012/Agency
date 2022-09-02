@@ -1,3 +1,0 @@
-createairplane -1 1 true
-createairplane 802 1 true
-exit
