@@ -1,6 +1,6 @@
 <table class="ticket-table">
     <thead>
-        <tr>
+        <tr *ngIf="!hasErrors">
             <th>Ticket ID</th>
             <th>Journey ID</th>
             <th>From - To</th>
@@ -27,16 +27,19 @@
                 </button>
             </td>
         </tr>
+        <tr *ngIf="hasErrors">
+            <td>{{errorText}}: Could not load data. Please, reload and try again later.</td>
+        </tr>
     </tbody>
     <tfoot>
         <tr>
-            <button (click)="addOpenClick()">
+            <button (click)="addOpenClick()" *ngIf="!hasErrors">
                 <img class="btn-add-img" src="https://cdn3.iconfinder.com/data/icons/eightyshades/512/14_Add-512.png">
                 <p style="text-align: center; float: right;">Add</p>
             </button>
          </tr>
     </tfoot>
 </table>
-<div [hidden]="addWindowIsHidden">
+<div *ngIf="!addWindowIsHidden && !hasErrors">
  <app-add-edit-ticket   id="add-edit-window"></app-add-edit-ticket>
 </div>

@@ -27,11 +27,13 @@ export class AddEditJourneyComponent implements OnInit {
      this.refreshVehiclesList();
    }
  
-   refreshVehiclesList(){
-     this.vehService.getVehicles().subscribe(data=>
+  async refreshVehiclesList(){
+     (await this.vehService.getVehicles()).subscribe(data=>
       {
         this.VehiclesList = data;
-      })
+      },(err)=>{
+        close();
+      });
     }
  
     close(){

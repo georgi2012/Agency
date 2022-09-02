@@ -1,6 +1,6 @@
 <table class="table-journey" >
     <thead>
-        <tr>
+        <tr *ngIf="!hasErrors">
             <th>ID</th>
             <th>Start Location</th>
             <th>Destination</th>
@@ -29,11 +29,13 @@
                 </button>
             </td>
         </tr>
-        
+        <tr *ngIf="hasErrors">
+            <td>{{errorText}}: Could not load data. Please, reload and try again later.</td>
+        </tr>
     </tbody>
     <tfoot>
-        <tr>
-            <button (click)="addOpenClick()">
+        <tr *ngIf="!hasErrors">
+            <button (click)="addOpenClick()" >
                 <img class="btn-add-img" src="https://cdn3.iconfinder.com/data/icons/eightyshades/512/14_Add-512.png">
                 <p style="text-align: center; float: right;">Add</p>
                 </button>
@@ -43,6 +45,6 @@
 <form>
     
 </form>
-<div [hidden]="addWindowIsHidden">
+<div *ngIf="!addWindowIsHidden && !hasErrors">
 <app-add-edit-journey   id="add-edit-window"></app-add-edit-journey>
 </div>

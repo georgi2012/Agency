@@ -13,7 +13,8 @@ export class ShowVehComponent implements OnInit {
   constructor(private service: VehiclesService) { }
 
   VehiclesList:Vehicle[];
-
+  hasErrors:boolean = false;
+  errorText:string="";
   //veh:any;
   addWindowIsHidden=true;
   noElementsAvailable=false;
@@ -27,13 +28,11 @@ export class ShowVehComponent implements OnInit {
 
   enterEditMode(editableVeh:Vehicle){
     this.isEditing=true;
-    //this.veh=editableVeh;
     this.addWindowIsHidden=false;
     this.addEditComp.enterEditorMode(editableVeh);
   }
 
   addOpenClick(){
-    //tbd
     if(!this.addWindowIsHidden && !this.isEditing){
       this.closeClick();
       return;
@@ -56,12 +55,15 @@ export class ShowVehComponent implements OnInit {
     window.location.reload();
   }
 
-  refreshVehList(){
-   this.service.getVehicles().subscribe(data=>
+  async refreshVehList(){
+    this.hasErrors=false;
+   (await this.service.getVehicles()).subscribe(data=>
     {
       this.VehiclesList = data; 
+    },(err)=>{
+      this.hasErrors=true;
+      this.errorText=err.statusText;
     });
-    //this.noElementsAvailable = this.VehiclesList.length == 0 ;
   }
 
 }

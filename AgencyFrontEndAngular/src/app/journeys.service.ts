@@ -11,8 +11,30 @@ export class JourneysService {
 
 
   constructor(private http: HttpClient) { }
+
+  switchStatusCode(code:number){
+    if(code >=500){
+      alert("Server error occured");
+     }
+    else if (code >=400){
+      alert("Invalid data.");
+    }
+    else if(code == 204){
+      alert("Content was not found in base");
+    }
+    else {
+      alert("Unknown error occured");
+    }
+  }
+
+
   getJourneys():Observable<any[]>{
-    return this.http.get<any[]>(this.ApiUrl+'Journey');
+    return this.http.get<any[]>(this.ApiUrl+'Journey').pipe(
+      catchError((err) => {
+       // alert('Error connecting to server')
+        console.error('Error connecting to server');
+        return throwError(err);
+      }));
   }
 
   getJourneyById(val: any):Observable<any[]>{
@@ -20,17 +42,11 @@ export class JourneysService {
   }
 
   addJourney(journey: any){
-    return this.http.post(this.ApiUrl+'Journey',journey,{observe: 'response'}).subscribe(resp => { 
-      //  if(resp.status <300){
-      //   alert("Added successfully");
-      //  }
-         if(resp.status >= 400 && resp.status <500){
-        alert("Client error");
-       }
-       else if (resp.status>=500){
-        alert("Server error");
-       }
-    });
+    return this.http.post(this.ApiUrl+'Journey',journey,{observe: 'response'}).subscribe(
+      ()=>{},(err:Response)=>{
+        this.switchStatusCode(err.status);
+      }
+    );
   }
 
   deleteJourney(id: any){

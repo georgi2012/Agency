@@ -54,7 +54,9 @@ export class AddEditVehComponent implements OnInit {
     this.service.getTypesList().subscribe(data=>
      {
        this.VehiclesTypes = data;
-     })
+     },(err)=>{
+      close();
+    });
    }
 
    reloadPage(){
@@ -106,21 +108,6 @@ export class AddEditVehComponent implements OnInit {
       }
    }
 
-   handleError(error:any) {
-    let errorMessage = '';
-    if (error.error instanceof ErrorEvent) {
-      // client-side error
-      errorMessage = `Error: ${error.error.message}`;
-    } else {
-      // server-side error
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    alert(errorMessage);
-    return throwError(() => {
-        return errorMessage;
-    });
-  }
-
   makeCorrectVehicle() :any{
     switch(this.veh.VehicleModel)
     {
@@ -169,7 +156,12 @@ export class AddEditVehComponent implements OnInit {
       switch(this.veh.VehicleModel)
       {
         case "Boat":{
+          try{
           this.service.addBoat(newVeh);
+          }catch(err)
+          {
+            alert(err);
+          }
           break;
         }
         case "Airplane":{

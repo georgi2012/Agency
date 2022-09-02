@@ -1,2 +1,0 @@
-createtrain 80 0.4 3
-exit

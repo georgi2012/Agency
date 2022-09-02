@@ -1,2 +1,0 @@
-createairplane 250 1 true
-exit

@@ -1,3 +1,0 @@
-createbus 52 0.7
-createbus 8 0.7
-exit

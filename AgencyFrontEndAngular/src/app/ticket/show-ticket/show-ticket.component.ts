@@ -16,6 +16,8 @@ export class ShowTicketComponent implements OnInit {
   ticket:any;
   addWindowIsHidden=true;
   noElementsAvailable=false;
+  hasErrors:boolean= false;
+  errorText:string="";
 
   ngOnInit(): void {//first method when in scope
    this.refreshTicketsList(); 
@@ -45,10 +47,15 @@ export class ShowTicketComponent implements OnInit {
   }
 
   refreshTicketsList(){
+  
    this.service.getTickets().subscribe(data=>
     {
       this.TicketsList = data;
-    });
+    }
+      ,(err)=>{
+        this.hasErrors=true;
+        this.errorText=err.statusText;
+      });
     this.noElementsAvailable = this.TicketsList.length == 0;
   }
 

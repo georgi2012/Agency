@@ -28,7 +28,9 @@ export class AddEditTicketComponent implements OnInit {
      this.journeyService.getJourneys().subscribe(data=>
       {
         this.JourneysList = data;
-      })
+      },(err)=>{
+        close();
+      });
     }
  
     reloadPage(){

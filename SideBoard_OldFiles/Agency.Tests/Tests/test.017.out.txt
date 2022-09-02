@@ -1,3 +1,0 @@
-Vehicle with ID 0 was created.
-Journey with ID 0 was created.
-Ticket with ID 0 was created.

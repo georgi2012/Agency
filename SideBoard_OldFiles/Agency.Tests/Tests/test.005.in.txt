@@ -1,3 +1,0 @@
-createtrain 28 0.4 3
-createtrain 152 0.4 3
-exit

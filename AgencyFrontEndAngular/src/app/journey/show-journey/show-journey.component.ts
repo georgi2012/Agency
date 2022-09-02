@@ -11,6 +11,8 @@ export class ShowJourneyComponent implements OnInit {
 
   JourneysList:any[]=[];
 
+  hasErrors:boolean = false;
+  errorText:string="";
   addWindowIsHidden=true;
   noElementsAvailable=false;
 
@@ -45,6 +47,9 @@ export class ShowJourneyComponent implements OnInit {
    this.service.getJourneys().subscribe(data=>
     {
       this.JourneysList = data; 
+    },(err)=>{
+      this.hasErrors=true;
+      this.errorText=err.statusText;
     });
     this.noElementsAvailable = this.JourneysList.length == 0;
   }
