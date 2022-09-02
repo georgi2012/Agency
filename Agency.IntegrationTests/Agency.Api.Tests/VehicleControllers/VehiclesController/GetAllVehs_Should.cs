@@ -27,19 +27,14 @@ namespace Agency.UnitTests.Agency.Api.Tests.VehicleControllers.VehiclesControlle
         public async void GetAllVehs_ShouldReturnListOfAllAvailableJourneys()
         {
             //arrange
-            Mock<VehicleNode> mockJ1 = new();
-            Mock<VehicleNode> mockJ2 = new();
-            Mock<VehicleNode> mockJ3 = new();
-            List<VehicleNode> vehsList = new() { mockJ1.Object, mockJ2.Object, mockJ3.Object };
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            Mock<IVehicleNode> mockVehicleNode = new();
-            mockVehicleNode.Setup(x => x.MakeNodeListFromVehiclesList(
-                It.IsAny<List<IVehicle>>())).Returns(Task.FromResult(vehsList));
+            AgencyDBContext Db = AgencyUtils.InMemorySeededContextGenerator();
+            TicketService tService = new(Db);
+            JourneyService jService = new(Db, tService);
+            VehicleService vService = new(Db, jService);
+            VehicleNode vehicleNode = new();
             //act
-            VehicleController controller = new(mockVService.Object,mockVehicleNode.Object);
+            var vehsList = Db.Vehicles.ToList();
+            VehicleController controller = new(vService,vehicleNode);
             var result = (await controller.GetAllVehs()).Value;
             //assert
             Assert.NotNull(result);

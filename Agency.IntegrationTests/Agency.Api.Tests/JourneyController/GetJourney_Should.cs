@@ -24,20 +24,16 @@ namespace Agency.UnitTests.Agency.Api.Tests.JourneyControllers
         public async void GetJourney_ShouldReturnTheJourneyWhenExists()
         {
             //arrange
-            Mock<IJourney> mockJourney = new();
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            Mock<JourneyNode> mockJourneyNode = new();
-            mockJService.Setup(x => x.GetJourneyWithIdAsync(It.IsAny<Guid>())).
-                Returns(Task.FromResult(mockJourney.Object));
-            mockJourneyNode.Setup(x => x.MakeJourneyNode(
-                It.IsAny<IJourney>(), mockDb.Object)).Returns(Task.FromResult(mockJourneyNode.Object));
+            AgencyDBContext db = AgencyUtils.InMemorySeededContextGenerator();
+            TicketService tService = new(db);
+            JourneyService jService = new(db, tService);
+            VehicleService vService = new(db, jService);
+            JourneyNode journeyNode = new();
             //act
-            JourneyController controller = new(mockJService.Object,
-                mockVService.Object, mockDb.Object, mockJourneyNode.Object);
-            var result = (await controller.GetJourney(new Guid())).Value;
+            JourneyController controller = new(jService,
+                vService, db, journeyNode);
+            var guid = db.Journeys.ToList().First().JourneyID;
+            var result = (await controller.GetJourney(guid)).Value;
             //assert
             Assert.NotNull(result);
         }
@@ -46,17 +42,14 @@ namespace Agency.UnitTests.Agency.Api.Tests.JourneyControllers
         public async void GetJourney_ShouldReturnNotFoundWhenDoesNotExist()
         {
             //arrange
-            Mock<IJourney> mockJourney = new();
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            Mock<JourneyNode> mockJourneyNode = new();
-            mockJService.Setup(x => x.GetJourneyWithIdAsync(It.IsAny<Guid>())).
-                Returns(Task.FromResult<IJourney>(null));
+            AgencyDBContext db = AgencyUtils.InMemoryEmptyContextGenerator();
+            TicketService tService = new(db);
+            JourneyService jService = new(db, tService);
+            VehicleService vService = new(db, jService);
+            JourneyNode journeyNode = new();
             //act
-            JourneyController controller = new(mockJService.Object,
-                mockVService.Object, mockDb.Object, mockJourneyNode.Object);
+            JourneyController controller = new(jService,
+                vService, db, journeyNode);
             var result = (await controller.GetJourney(new Guid())).Result;
             //assert
             Assert.IsType<NotFoundObjectResult>(result);

@@ -12,41 +12,19 @@ namespace Agency.UnitTests.Agency.Api.Tests.VehicleControllers.AirplaneControlle
     public class AddAirplane_Should
     {
         [Fact]
-        public async void AddAirplane_ShouldReturnBadRequestWhenCreationFailed()
-        {
-            //arrange
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            Mock<AirplaneService> mockPlaneService = new(mockDb.Object);
-            Mock<AirplaneReceiveNode> mockNode = new Mock<AirplaneReceiveNode>();
-            mockPlaneService.Setup(x => x.CreateAirplaneAsync(It.IsAny<int>(),
-                It.IsAny<decimal>(), It.IsAny<bool>())).Throws(new Exception());
-            //act
-            AirplaneController controller = new(mockPlaneService.Object,
-                    mockVService.Object);
-            var result = await controller.AddAirplane(mockNode.Object);
-            //assert
-            Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(400, ((BadRequestObjectResult)result).StatusCode);
-
-        }
-
-        [Fact]
         public async void AddAirplane_ShouldReturnOKWhenIsCreatedSuccessfully()
         {
             //arrange
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            Mock<AirplaneService> mockPlaneService = new(mockDb.Object);
-            Mock<AirplaneReceiveNode> mockNode = new Mock<AirplaneReceiveNode>();
+            AgencyDBContext Db = AgencyUtils.InMemorySeededContextGenerator();
+            TicketService tService = new(Db);
+            JourneyService jService = new(Db, tService);
+            VehicleService vService = new(Db, jService);
+            AirplaneService planeService = new(Db);
+            AirplaneReceiveNode node = new AirplaneReceiveNode();
             //act
-            AirplaneController controller = new(mockPlaneService.Object,
-                    mockVService.Object);
-            var result = await controller.AddAirplane(mockNode.Object);
+            AirplaneController controller = new(planeService,
+                    vService);
+            var result = await controller.AddAirplane(node);
             //assert
             Assert.IsType<OkObjectResult>(result);
             Assert.Equal(200, ((OkObjectResult)result).StatusCode);

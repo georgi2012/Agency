@@ -25,18 +25,16 @@ namespace Agency.UnitTests.Agency.Api.Tests.TicketControllers
         public async void AddTicket_ShouldReturnBadRequestWhenJourneyIsNotFound()
         {
             //arrange
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            mockJService.Setup(x => x.GetJourneyWithIdAsync(It.IsAny<Guid>()))
-                .Returns<IJourney>(null);
-            Mock<TicketReceiveNode> mockTicketDTO = new();
-            Mock<ITicketNode> mockTNode = new();
+            AgencyDBContext db = AgencyUtils.InMemoryEmptyContextGenerator();
+            TicketService tService = new(db);
+            JourneyService jService = new(db, tService);
+            VehicleService vService = new(db, jService);
+            TicketReceiveNode ticketDTO = new();
+            TicketNode tNode = new();
             //act
-            TicketController controller = new(mockJService.Object, mockTService.Object,
-                 mockDb.Object, mockTNode.Object);
-            var result = await controller.AddTicket(mockTicketDTO.Object);
+            TicketController controller = new(jService, tService,
+                 db, tNode);
+            var result = await controller.AddTicket(ticketDTO);
             //assert
             Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, ((BadRequestObjectResult)result).StatusCode);
@@ -47,20 +45,17 @@ namespace Agency.UnitTests.Agency.Api.Tests.TicketControllers
         public async void AddTicket_ShouldReturnOKWhenIsCreatedSuccessfully()
         {
             //arrange
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<IJourney> mockJourney = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            mockJService.Setup(x => x.GetJourneyWithIdAsync(It.IsAny<Guid>())).
-                Returns(Task.FromResult(mockJourney.Object));
-            Mock<TicketReceiveNode> mockTicketDTO = new();
-            mockTicketDTO.Object.JourneyID = new Guid().ToString();
-            Mock<ITicketNode> mockTNode = new();
+            AgencyDBContext db = AgencyUtils.InMemorySeededContextGenerator();
+            TicketService tService = new(db);
+            JourneyService jService = new(db, tService);
+            VehicleService vService = new(db, jService);
+            TicketReceiveNode ticketDTO = new();
+            ticketDTO.JourneyID = db.Journeys.ToList().First().JourneyID.ToString();
+            TicketNode tNode = new();
             //act
-            TicketController controller = new(mockJService.Object, mockTService.Object,
-                 mockDb.Object, mockTNode.Object);
-            var result = await controller.AddTicket(mockTicketDTO.Object);
+            TicketController controller = new(jService, tService,
+                 db, tNode);
+            var result = await controller.AddTicket(ticketDTO);
             //assert
             Assert.IsType<OkObjectResult>(result);
             Assert.Equal(200, ((OkObjectResult)result).StatusCode);

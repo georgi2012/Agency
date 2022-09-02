@@ -27,19 +27,15 @@ namespace Agency.UnitTests.Agency.Api.Tests.VehicleControllers.VehiclesControlle
         public async void GetVeh_ShouldReturnTheJourneyWhenExists()
         {
             //arrange
-            Mock<IVehicle> mockVeh = new();
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            Mock<VehicleNode> mockVehicleNode = new();
-            mockVService.Setup(x => x.GetVehicleWithIdAsync(It.IsAny<int>())).
-                Returns(Task.FromResult(mockVeh.Object));
-            mockVehicleNode.Setup(x => x.MakeNodeFromVehicle(
-                It.IsAny<IVehicle>())).Returns(Task.FromResult(mockVehicleNode.Object));
+            AgencyDBContext Db = AgencyUtils.InMemorySeededContextGenerator();
+            TicketService TService = new(Db);
+            JourneyService JService = new(Db, TService);
+            VehicleService VService = new(Db, JService);
+            VehicleNode VehicleNode = new();
             //act
-            VehicleController controller = new(mockVService.Object ,mockVehicleNode.Object);
-            var result = (await controller.GetVeh(42)).Value;
+            var id = Db.Vehicles.ToList().First().VehicleID;
+            VehicleController controller = new(VService ,VehicleNode);
+            var result = (await controller.GetVeh(id)).Value;
             //assert
             Assert.NotNull(result);
         }
@@ -48,16 +44,13 @@ namespace Agency.UnitTests.Agency.Api.Tests.VehicleControllers.VehiclesControlle
         public async void GetVeh_ShouldReturnNotFoundWhenDoesNotExist()
         {
             //arrange
-            Mock<IVehicle> mockVeh = new();
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            Mock<VehicleNode> mockVehicleNode = new();
-            mockVService.Setup(x => x.GetVehicleWithIdAsync(It.IsAny<int>())).
-                Returns(Task.FromResult<IVehicle>(null));
+            AgencyDBContext Db = AgencyUtils.InMemoryEmptyContextGenerator();
+            TicketService TService = new(Db);
+            JourneyService JService = new(Db, TService);
+            VehicleService VService = new(Db, JService);
+            VehicleNode VehicleNode = new();
             //act
-            VehicleController controller = new(mockVService.Object,mockVehicleNode.Object);
+            VehicleController controller = new(VService,VehicleNode);
             var result = (await controller.GetVeh(42)).Result;
             //assert
             Assert.IsType<NotFoundObjectResult>(result);

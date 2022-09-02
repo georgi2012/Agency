@@ -25,24 +25,23 @@ namespace Agency.UnitTests.Agency.Api.Tests.JourneyControllers
         public async void GetAllJourneys_ShouldReturnListOfAllAvailableJourneys()
         {
             //arrange
-            Mock<JourneyNode> mockJ1 = new();
-            Mock<JourneyNode> mockJ2 = new();
-            Mock<JourneyNode> mockJ3 = new();
-            List<JourneyNode> journeysList = new() { mockJ1.Object, mockJ2.Object, mockJ3.Object };
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            Mock<IJourneyNode> mockJourneyNode = new();
-            mockJourneyNode.Setup(x => x.MakeListOfJourneyNodes(
-                It.IsAny<List<IJourney>>(), mockDb.Object)).Returns(Task.FromResult(journeysList));
+            AgencyDBContext db = AgencyUtils.InMemorySeededContextGenerator();
+            var journeysList = db.Journeys.ToList();
+            TicketService tService = new(db);
+            JourneyService jService = new(db, tService);
+            VehicleService vService = new(db, jService);
+            JourneyNode journeyNode = new();
             //act
-            JourneyController controller = new(mockJService.Object,
-                mockVService.Object, mockDb.Object, mockJourneyNode.Object);
+            JourneyController controller = new(jService,
+                vService, db, journeyNode);
             var result =(await controller.GetAllJourneys()).Value;
             //assert
             Assert.NotNull(result);
             Assert.Equal(journeysList.Count,result.Count);
+            foreach (var item in journeysList)
+            {
+                Assert.True(result.Find(x=>x.JourneyID == item.JourneyID.ToString()) != null);
+            }
         }
 
     }

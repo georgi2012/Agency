@@ -14,68 +14,63 @@ namespace Agency.UnitTests.Agency.Api.Tests.VehicleControllers.BoatControllers
     public class EditBoat_Should
     {
         [Fact]
-        public async void EditAirplane_ShouldReturnNotFoundWhenNotFoundSuchVehicleInDb()
+        public async void EditBoat_ShouldReturnNotFoundWhenNotFoundSuchVehicleInDb()
         {
             //arrange
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            Mock<BoatService> mockBoatService = new(mockDb.Object);
-            Mock<BoatReceiveNode> mockNode = new Mock<BoatReceiveNode>();
-            mockVService.Setup(x => x.GetVehicleWithIdAsync(It.IsAny<int>())).
-                Returns(Task.FromResult<IVehicle>(null));
-            mockNode.Object.ID = 42;
+            AgencyDBContext Db = AgencyUtils.InMemoryEmptyContextGenerator();
+            TicketService tService = new(Db);
+            JourneyService jService = new(Db, tService);
+            VehicleService vService = new(Db, jService);
+            BoatService boatService = new(Db);
+            BoatReceiveNode node = new BoatReceiveNode();
+            node.ID = 42;
             //act
-            BoatController controller = new(mockBoatService.Object,
-                    mockVService.Object);
-            var result = await controller.EditBoat(mockNode.Object);
+            BoatController controller = new(boatService,
+                    vService);
+            var result = await controller.EditBoat(node);
             //
             Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal(404, ((NotFoundObjectResult)result).StatusCode);
         }
 
         [Fact]
-        public async void EditAirplane_ShouldReturnOKWhenIsChangedSuccessfully()
+        public async void EditBoat_ShouldReturnOKWhenIsChangedSuccessfully()
         {
             //arrange
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            Mock<BoatService> mockBoatService = new(mockDb.Object);
-            Mock<BoatReceiveNode> mockNode = new Mock<BoatReceiveNode>();
-            Mock<Boat> mockBoat = new();
-            mockVService.Setup(x => x.GetVehicleWithIdAsync(It.IsAny<int>())).
-                Returns(Task.FromResult<IVehicle>(mockBoat.Object));
+            AgencyDBContext Db = AgencyUtils.InMemorySeededContextGenerator();
+            TicketService tService = new(Db);
+            JourneyService jService = new(Db, tService);
+            VehicleService vService = new(Db, jService);
+            BoatService boatService = new(Db);
+            BoatReceiveNode node = new BoatReceiveNode();
             //act
-            mockNode.Object.ID = 42;
+            node.ID = Db.Vehicles.ToList().Find(x=>x is Boat).VehicleID;
+            node.PricePerKilometer = 3m;
+            node.HasWaterSports = true;
+            node.PassangerCapacity = 600;
             //assert
-            BoatController controller = new(mockBoatService.Object,
-                    mockVService.Object);
-            var result = await controller.EditBoat(mockNode.Object);
+            BoatController controller = new(boatService,
+                    vService);
+            var result = await controller.EditBoat(node);
             //
             Assert.IsType<OkObjectResult>(result);
             Assert.Equal(200, ((OkObjectResult)result).StatusCode);
         }
 
         [Fact]
-        public async void EditAirplane_ShouldReturnBadRequestWhenIdIsNotAirplane()
+        public async void EditBoat_ShouldReturnBadRequestWhenIdIsNotAirplane()
         {
             //arrange
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            Mock<BoatService> mockBoatService = new(mockDb.Object);
-            Mock<BoatReceiveNode> mockNode = new Mock<BoatReceiveNode>();
-            Mock<IBus> mockNOTBoat = new();
-            mockVService.Setup(x => x.GetVehicleWithIdAsync(It.IsAny<int>())).
-                Returns(Task.FromResult<IVehicle>(mockNOTBoat.Object));
+            AgencyDBContext Db = AgencyUtils.InMemorySeededContextGenerator();
+            TicketService tService = new(Db);
+            JourneyService jService = new(Db, tService);
+            VehicleService vService = new(Db, jService);
+            BoatService boatService = new(Db);
+            BoatReceiveNode node = new BoatReceiveNode();
+            node.ID = Db.Vehicles.ToList().Find(x => x is Bus).VehicleID;
             //act
-            BoatController controller = new(mockBoatService.Object,
-                    mockVService.Object);
-            var result = await controller.EditBoat(mockNode.Object);
+            BoatController controller = new(boatService, vService);
+            var result = await controller.EditBoat(node);
             //assert
             Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(400, ((BadRequestObjectResult)result).StatusCode);

@@ -24,37 +24,18 @@ namespace Agency.UnitTests.Agency.Api.Tests.VehicleControllers.VehiclesControlle
     public class DeleteVeh_Should
     {
         [Fact]
-        public async void DeleteVeh_ShouldReturnNotFoundWhenRemoveFailsBecauseNotFound()
-        {
-            //arrange
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
-            mockVService.Setup(x => x.RemoveVehicleAsync(It.IsAny<int>())).Throws(new Exception());
-            Mock<JourneyReceiveNode> mockJourneyDTO = new();
-            Mock<IVehicleNode> mockVNode = new();
-            //act
-            VehicleController controller = new(mockVService.Object, mockVNode.Object);
-            var result = await controller.DeleteVeh(new Random().Next(10,1000));
-            //assert
-            Assert.IsType<NotFoundObjectResult>(result);
-            Assert.Equal(404, ((NotFoundObjectResult)result).StatusCode);
-
-        }
-
-        [Fact]
         public async void DeleteVeh_ShouldReturnOKWhenIsDeletedSuccessfully()
         {
             //arrange
-            Mock<AgencyDBContext> mockDb = new();
-            Mock<TicketService> mockTService = new(mockDb.Object);
-            Mock<JourneyService> mockJService = new(mockDb.Object, mockTService.Object);
-            Mock<IVehicleNode> mockVNode = new();
-            Mock<VehicleService> mockVService = new(mockDb.Object, mockJService.Object);
+            AgencyDBContext Db = AgencyUtils.InMemorySeededContextGenerator();
+            TicketService tService = new(Db);
+            JourneyService jService = new(Db, tService);
+            VehicleService vService = new(Db, jService);
+            VehicleNode vNode = new();
             //act
-            VehicleController controller = new(mockVService.Object,mockVNode.Object);
-            var result = await controller.DeleteVeh(new Random().Next(10, 1000));
+            int id = Db.Vehicles.ToList().First().VehicleID;
+            VehicleController controller = new(vService,vNode);
+            var result = await controller.DeleteVeh(id);
             //assert
             Assert.IsType<OkObjectResult>(result);
             Assert.Equal(200, ((OkObjectResult)result).StatusCode);
