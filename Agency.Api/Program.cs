@@ -31,14 +31,35 @@ builder.Services.AddScoped<IVehicleNode, VehicleNode>();
 builder.Services.AddMvcCore().AddDataAnnotations();
 
 //connect the database
+
+//builder.Services.AddDbContext<AgencyDBContext>(opt =>
+//opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")),
+//ServiceLifetime.Scoped);
+string connectionString = "";
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+var dbPassword = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
+if (dbHost == null || dbName == null || dbPassword == null)
+{
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+}
+else
+{
+    connectionString = $"Data Source={dbHost};Initial Catalog={dbName}; User ID=sa;Password={dbPassword}";
+}
+//var connectionString = $"Server={dbHost}; Database = {dbName}; Trusted_Connection = True; Password={dbPassword}";
 builder.Services.AddDbContext<AgencyDBContext>(opt =>
-   opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")),
-   ServiceLifetime.Scoped);
-//builder.Services.AddSingleton<AgencyDBContext>();
+    {
+        opt.UseSqlServer(connectionString,
+        sqlServerOptionsAction: sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure();
+        });
+    });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddCors(option=>
+builder.Services.AddCors(option =>
 {
     option.AddDefaultPolicy(builder =>
     {
@@ -49,11 +70,11 @@ builder.Services.AddCors(option=>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+app.UseSwagger();
+app.UseSwaggerUI();
+//}
 
 //added
 app.UseRouting();
